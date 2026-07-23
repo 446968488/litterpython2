@@ -1,0 +1,7 @@
+把你的课程视频（mp4 格式）放在本文件夹里。
+
+命名建议：lesson1.mp4、lesson2.mp4 … 或任意名字。
+放好后，到 data/course.js 里对应课时的 video 字段填写路径，例如：
+    video: "videos/lesson1.mp4"
+
+没有视频的课时，在 course.js 里删掉 video 那一行即可。
