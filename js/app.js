@@ -74,12 +74,14 @@
   const STYLES = [
     { id: 'gentle', label: '亲切低龄' },
     { id: 'humor', label: '幽默话唠' },
+    { id: 'humor2', label: '幽默·梗王' },
     { id: 'strict', label: '严厉毒舌' },
+    { id: 'strict2', label: '严厉·暴击' },
   ];
   function loadStyle() { const v = localStorage.getItem(STYLE_KEY); return STYLES.some((s) => s.id === v) ? v : 'gentle'; }
   function saveStyle(v) { if (STYLES.some((s) => s.id === v)) localStorage.setItem(STYLE_KEY, v); }
   // 资源版本号：与 tools/gen_audio.py 的 BUILD 保持一致；改语音后同步改这里，浏览器自动拉最新，免硬刷新
-  const ASSET_V = '20260720o';
+  const ASSET_V = '20260724d';
   // 风格化语音文件解析：优先 audio/<base>_<style>.mp3，回退 audio/<base>.mp3（如 narrate_gentle→narrate）
   function vfile(base) { const st = loadStyle(); return 'audio/' + base + '_' + st + '.mp3?v=' + ASSET_V; }
 
@@ -108,6 +110,20 @@
       allCorrect: ['全做完了，还全对，这回没给我丢脸。', '一节全对，算你过关。'],
       right: ['这题对了。', '嗯，没错。', '过关。'],
     },
+    humor2: {
+      submitHint: '活儿干完啦！点提交，听我夸你～',
+      notDone: ['哎哟，还有题在等你呢，别让它们孤单～', '活儿还没干完就想跑？先把剩下的题收拾了。'],
+      partial: ['整节都交啦！不过有几题偷偷错了，抓出来改改～', '做是做完了，就是有几位「捣蛋鬼」没对，去治治它们。'],
+      allCorrect: ['好家伙，全做完了还全对，今天运气不错啊！', '一节全清零失误，这波操作我给满分～'],
+      right: ['对啦！这题被你拿下了～', '嘿，答对了！', '可以可以，这题你会了！'],
+    },
+    strict2: {
+      submitHint: '做完了就提交，别磨蹭。',
+      notDone: ['题都没做完，交什么交？把剩下的补上。', '还有空着的题，先填完再来。'],
+      partial: ['做是做完了，但有几题错了，拿去改。', '全节都做了，错的那几题，重做。'],
+      allCorrect: ['全做完了，还全对，这回没给我丢脸。', '一节全对，算你过关。'],
+      right: ['这题对了。', '嗯，没错。', '过关。'],
+    },
   };
   // 取某风格某状态（或 submitHint/right）下的一条随机话术
   function pickEval(kind, style) {
@@ -120,8 +136,8 @@
     if (!award) return '';
     const st = loadStyle();
     const name = award.badge + award.title;
-    if (st === 'humor') return '🏅 好家伙，' + name + ' 勋章到手！这下你是有身份（和勋章）的人了，下一段戴着它出发～';
-    if (st === 'strict') return '🏅 行了，赏你 ' + name + ' 勋章，别骄傲，下一段戴着它继续走。';
+    if (st === 'humor' || st === 'humor2') return '🏅 好家伙，' + name + ' 勋章到手！这下你是有身份（和勋章）的人了，下一段戴着它出发～';
+    if (st === 'strict' || st === 'strict2') return '🏅 行了，赏你 ' + name + ' 勋章，别骄傲，下一段戴着它继续走。';
     return '🏅 恭喜你，宝贝！你获得了「' + name + '」称号，真棒！下一段戴着它出发～';
   }
   // 算出本课当前评价状态（没做完/部分错/全对）
