@@ -73,12 +73,21 @@
   const STYLE_KEY = 'course_voice_style';
   const STYLES = [
     { id: 'gentle', label: '亲切低龄' },
-    { id: 'humor', label: '幽默话唠' },
     { id: 'humor2', label: '幽默·梗王' },
     { id: 'strict', label: '严厉毒舌' },
-    { id: 'strict2', label: '严厉·暴击' },
   ];
-  function loadStyle() { const v = localStorage.getItem(STYLE_KEY); return STYLES.some((s) => s.id === v) ? v : 'gentle'; }
+  // 各风格是否有男声录音：当前男声=云希基础版，仅「亲切低龄」(gentle) 有；梗王/严厉暂无男声。
+  // 选男声时，语音风格选择器只显示本数组内的风格，避免用户选了没男声的风格误以为出 bug。
+  const MALE_STYLE_IDS = ['gentle'];
+  function styleAvailableForGender(id) {
+    return VOICE_GENDER !== 'm' || MALE_STYLE_IDS.indexOf(id) !== -1;
+  }
+  function loadStyle() {
+    const v = localStorage.getItem(STYLE_KEY);
+    // 男声只有「亲切」一档有录音(云希基础版)，选男声时强制用 gentle，避免用户选了无男声的风格误以为坏了
+    if (VOICE_GENDER === 'm') return MALE_STYLE_IDS.indexOf(v) !== -1 ? v : 'gentle';
+    return STYLES.some((s) => s.id === v) ? v : 'gentle';
+  }
   function saveStyle(v) { if (STYLES.some((s) => s.id === v)) localStorage.setItem(STYLE_KEY, v); }
   // 音色（男声/女声）：与「语音风格」正交维度。默认女声(晓晓)，男声=云希。男声需先用 tools/gen_male_voice.py 烤制，缺文件自动回退女声。
   const VOICE_GENDER = (localStorage.getItem('voice_gender') || 'f');
@@ -100,13 +109,6 @@
       allCorrect: ['哇，整节都做完了，而且还全对！你真棒～', '这一节全做完了，一题都没错，太厉害啦！'],
       right: ['答对啦！', '对咯，就是这样～', '漂亮，做对啦！'],
     },
-    humor: {
-      submitHint: '活儿干完啦！点提交，听我夸你～',
-      notDone: ['哎哟，还有题在等你呢，别让它们孤单～', '活儿还没干完就想跑？先把剩下的题收拾了。'],
-      partial: ['整节都交啦！不过有几题偷偷错了，抓出来改改～', '做是做完了，就是有几位「捣蛋鬼」没对，去治治它们。'],
-      allCorrect: ['好家伙，全做完了还全对，今天运气不错啊！', '一节全清零失误，这波操作我给满分～'],
-      right: ['对啦！这题被你拿下了～', '嘿，答对了！', '可以可以，这题你会了！'],
-    },
     strict: {
       submitHint: '做完了就提交，别磨蹭。',
       notDone: ['题都没做完，交什么交？把剩下的补上。', '还有空着的题，先填完再来。'],
@@ -121,13 +123,6 @@
       allCorrect: ['好家伙，全做完了还全对，今天运气不错啊！', '一节全清零失误，这波操作我给满分～'],
       right: ['对啦！这题被你拿下了～', '嘿，答对了！', '可以可以，这题你会了！'],
     },
-    strict2: {
-      submitHint: '做完了就提交，别磨蹭。',
-      notDone: ['题都没做完，交什么交？把剩下的补上。', '还有空着的题，先填完再来。'],
-      partial: ['做是做完了，但有几题错了，拿去改。', '全节都做了，错的那几题，重做。'],
-      allCorrect: ['全做完了，还全对，这回没给我丢脸。', '一节全对，算你过关。'],
-      right: ['这题对了。', '嗯，没错。', '过关。'],
-    },
   };
   // 取某风格某状态（或 submitHint/right）下的一条随机话术
   function pickEval(kind, style) {
@@ -140,8 +135,8 @@
     if (!award) return '';
     const st = loadStyle();
     const name = award.badge + award.title;
-    if (st === 'humor' || st === 'humor2') return '🏅 好家伙，' + name + ' 勋章到手！这下你是有身份（和勋章）的人了，下一段戴着它出发～';
-    if (st === 'strict' || st === 'strict2') return '🏅 行了，赏你 ' + name + ' 勋章，别骄傲，下一段戴着它继续走。';
+    if (st === 'humor2') return '🏅 好家伙，' + name + ' 勋章到手！这下你是有身份（和勋章）的人了，下一段戴着它出发～';
+    if (st === 'strict') return '🏅 行了，赏你 ' + name + ' 勋章，别骄傲，下一段戴着它继续走。';
     return '🏅 恭喜你，宝贝！你获得了「' + name + '」称号，真棒！下一段戴着它出发～';
   }
   // 算出本课当前评价状态（没做完/部分错/全对）
@@ -2090,7 +2085,7 @@ CQIDAQAB
       '<div class="pp-section pp-theme-style">' +
         '<div class="pp-h"><span class="pp-ico">' + ICON.style + '</span>语音风格</div>' +
         '<div class="style-pick">' +
-          STYLES.map((s) => '<button class="style-opt' + (loadStyle() === s.id ? ' on' : '') + '" data-style="' + s.id + '">' + s.label + '</button>').join('') +
+          STYLES.filter((s) => styleAvailableForGender(s.id)).map((s) => '<button class="style-opt' + (loadStyle() === s.id ? ' on' : '') + '" data-style="' + s.id + '">' + s.label + '</button>').join('') +
         '</div>' +
       '</div>' +
       // 语音音色（男声/女声，与语音风格正交）
@@ -2100,7 +2095,7 @@ CQIDAQAB
           '<button class="gender-opt' + (VOICE_GENDER !== 'm' ? ' on' : '') + '" data-gender="f">👩 女声（晓晓）</button>' +
           '<button class="gender-opt' + (VOICE_GENDER === 'm' ? ' on' : '') + '" data-gender="m">👨 男声（云希）</button>' +
         '</div>' +
-        '<p class="pp-tip-sm">男声需先用「烤制工具」生成语音，未生成时自动回退女声。</p>' +
+        '<p class="pp-tip-sm">男声（云希）目前仅有「亲切低龄」一档风格音色；选男声时风格自动限定为该档。男声需先用「烤制工具」生成语音，未生成时自动回退女声。</p>' +
       '</div>' +
       // 课程解锁状态（可折叠）
       '<div class="pp-section pp-theme-unlock">' +
