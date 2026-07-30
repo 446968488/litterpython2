@@ -792,13 +792,13 @@
   // 作者发码：node license-author/author_gen.js <机器码>  （见 license-author/ 说明）
   const LICENSE_API = ''; // 离线模式不使用；保留字段以备将来切回在线模式
   const PUBLIC_KEY_PEM = `-----BEGIN PUBLIC KEY-----
-MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAlG58cfiYUJM5iWYjz1eh
-KOWaLh+n9wSvoy3ioWKy+mrdJ/8AvS7Fp7n4B2hgMhWDcSTe2+3itJpl61ZRlzxz
-cLV4unG+oGjkwZ7qDSI4aN40VE8jY3V83EBcMGpnKipwUZOqPFwXRc9mQosA8T/k
-bPyqn/V268Y2Cv+StEMjzLw+v4RNNteNptyxUiw6RW1BWki+E9mdP6h6XIBZmub/
-9xx7lvIyPknDf58rlGwzFanxJGjEuS/KPolqSLXRuTrrBVO8HTEwpPGVGcnTKsj5
-8KFgBrWKswn+wjTUHvfEozrUaxbQogybartQBOKzh58PD5pYuuKgUYkNpOf9leto
-CQIDAQAB
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuTz+gHccXAA7oRsaYdaP
+MHAghJ64G+a9TlS++G09681VtABNuy1AX21+DJYBa/n6r/kEpFlAj5QNY0YLhxR9
+VRxTAuRGQNgyxHczp8tE0mwqJyTk16/8zckJm2drWKAqVSVGnr399VFFzqaEQc25
+Rily+jdAdzUmSyyw3japEVtwCj02P02W2WCrTnIqfROmjKOKqBmgvqyiks52D0KG
+Q2C/Mdbeimjgma+XiBqjwFyDaxvGQsgESO0mc63Vfg8/q7zoPZn96CS+1jZlutru
+ExfjsgvhSmwJbCABQx6f4paJZ2zko7ZLtB2ZbUp0JnFR2sxTIXmj2bk8MUpLsj+2
+UwIDAQAB
 -----END PUBLIC KEY-----`;
 
   function randHex(n) { let s = ''; const c = '0123456789abcdef'; for (let i = 0; i < n; i++) s += c[Math.floor(Math.random() * 16)]; return s; }
